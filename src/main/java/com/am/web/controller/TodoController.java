@@ -21,11 +21,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.am.web.model.Todo;
 import com.am.web.service.TodoService;
 
+import io.micrometer.core.instrument.MeterRegistry;
+
 @Controller
 public class TodoController {
+	
 
+	
 	@Autowired
 	TodoService service;
+	@Autowired
+	MeterRegistry registry;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -35,6 +41,7 @@ public class TodoController {
 				dateFormat, false));
 	}
 
+	
 	@RequestMapping(value = "/list-todos", method = RequestMethod.GET)
 	public String showTodos(ModelMap model) {
 		String name = getLoggedInUserName(model);
@@ -93,15 +100,20 @@ public class TodoController {
 		return "redirect:/list-todos";
 	}
 
+	
+	
+	
 	@RequestMapping(value = "/add-todo", method = RequestMethod.POST)
 	public String addTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
-
+			
+		System.out.println("Counter button add todo ");
+		String val = "my custom value ";
 		if (result.hasErrors()) {
 			return "todo";
 		}
+		registry.counter("custom.metrics.add_todo", "value", val).increment();
 
-		service.addTodo(getLoggedInUserName(model), todo.getDesc(), todo.getTargetDate(),
-				false);
+		service.addTodo(getLoggedInUserName(model), todo.getDesc(), todo.getTargetDate(),false);
 		return "redirect:/list-todos";
 	}
 }

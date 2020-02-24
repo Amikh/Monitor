@@ -5,21 +5,32 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
-	//Create User - in28Minutes/dummy
+	//Create User - admin/pass
 	@Autowired
-    public void configureGlobalSecurity(AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.inMemoryAuthentication().withUser("admin").password("pass")
-                .roles("USER", "ADMIN");
+    public void configureGlobalSecurity(AuthenticationManagerBuilder auth)throws Exception {
+		
+		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+		
+		auth.inMemoryAuthentication()
+        .withUser("admin")
+        .password(encoder.encode("pass"))
+        .roles("USER", "ADMIN");
     }
+	
 	
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/login").permitAll()
-                .antMatchers("/", "/*todo*/**").access("hasRole('USER')").and()
-                .formLogin();
+
+        http.authorizeRequests()
+        .antMatchers("/login").permitAll()
+        .antMatchers("/", "/*todo*/**").access("hasRole('ADMIN')").and()
+        .formLogin();
+	
+	
     }
 }
