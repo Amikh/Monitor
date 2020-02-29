@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitor-app
+  labels:
+    app: monitor-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitor-app
+    spec:
+      containers:
+        - name: monitor-app
+          image: am2005/monitor:01
+          ports:
+            - containerPort: 8282
