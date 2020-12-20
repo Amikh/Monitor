@@ -2,16 +2,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: monitor-app
-  labels:
-    app: monitor-app
+  namespace: app-demo
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: monitor-app
+  template:
+    metadata:
+      name: monitor-app
+      labels:
+        app: monitor-app
     spec:
       containers:
+      - name: monitor-app
+        image: am2005/monitor:01
+        ports:
         - name: monitor-app
-          image: am2005/monitor:01
-          ports:
-            - containerPort: 8282
+          containerPort: 8282
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
